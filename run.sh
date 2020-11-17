@@ -43,8 +43,9 @@ if [ ! -f /etc/nginx/nginx.conf ]; then
         CAN_WRITE=$(s6-setuidgid $PUID sh -c 'test -w /data && echo 1')
     fi
 
-    if [ -z $CAN_WRITE ]; then
-        echo "Unable to write, setting chown"
+    # The idea is to put good rights for docker created volumes/directory but not others (already exist)
+    if [ -z $CAN_WRITE ] && [ ! "$(ls -A /data)" ]; then
+        echo "Unable to write and empty dir, setting chown"
         if [ -n $GROUP ]; then
             chown $USER:$GROUP /data
         else
