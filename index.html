@@ -21,7 +21,7 @@
 
             var iframe = document.querySelector('iframe');
             var origin = (new URL(iframe.src)).origin;
-            var file = './data.xml';
+            var file = './index.xml';
 
             var fileReadResponsePromise = fetch(file);
 
@@ -42,7 +42,7 @@
                         fileReadResponse = { ok: false };
                     }
 
-                    if (!fileReadResponse.ok) {
+                    if (!fileReadResponse.ok && fileReadResponse.status !== 404) {
                         iframe.contentWindow.postMessage(JSON.stringify({
                             action: 'load',
                             xml: ''
@@ -58,7 +58,7 @@
                     } else {
                         iframe.contentWindow.postMessage(JSON.stringify({
                             action: 'load',
-                            xml: await (fileReadResponse).text()
+                            xml: fileReadResponse.status === 404 ? '' : await (fileReadResponse).text()
                         }), origin);
                     }
                 }
